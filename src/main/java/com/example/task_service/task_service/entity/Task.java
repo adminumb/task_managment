@@ -46,5 +46,5 @@
             this.completed = completed;
         }
 
-
     }
+
