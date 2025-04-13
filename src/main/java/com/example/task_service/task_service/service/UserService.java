@@ -1,5 +1,6 @@
 package com.example.task_service.task_service.service;
 
+import com.example.task_service.task_service.annotation.LogExecutionTime;
 import com.example.task_service.task_service.dto.TaskDTO;
 import com.example.task_service.task_service.dto.UserDTO;
 import com.example.task_service.task_service.entity.Role;
@@ -43,12 +44,13 @@ public class UserService {
         userRepository.save(user);
         return userMapper.toDTO(user);
     }
-
+    @LogExecutionTime
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
     }
+    @LogExecutionTime
     public List<UserDTO> findByUsername (String username){
         return userRepository.findByUsername(username).stream()
                 .map(userMapper::toDTO)
