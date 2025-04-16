@@ -1,17 +1,14 @@
 package com.example.task_service.task_service.service;
 
-import com.example.task_service.task_service.annotation.LogExecutionTime;
-import com.example.task_service.task_service.dto.TaskDTO;
+import com.example.logexecution.annotation.LogExecutionTime;
 import com.example.task_service.task_service.dto.UserDTO;
 import com.example.task_service.task_service.entity.Role;
-import com.example.task_service.task_service.entity.Task;
 import com.example.task_service.task_service.entity.User;
 import com.example.task_service.task_service.exception.RoleNotFoundException;
 import com.example.task_service.task_service.exception.UserNotFoundException;
 import com.example.task_service.task_service.mapper.UserMapper;
 import com.example.task_service.task_service.repository.RoleRepository;
 import com.example.task_service.task_service.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,7 +41,7 @@ public class UserService {
         userRepository.save(user);
         return userMapper.toDTO(user);
     }
-    @LogExecutionTime
+    @LogExecutionTime(value = "CHELIKI")
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::toDTO)
