@@ -1,0 +1,84 @@
+docker-compose up -d
+docker-compose ps
+
+http://localhost:5050/browser/
+5433
+
+
+INSERT INTO roles (name) VALUES ('ROLE_USER');
+INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+
+INSERT INTO users (username, email, password)
+VALUES ('david','david@123.com','password123');
+
+Заметки:
+
+@JoinColumn — это просто явное указание Hibernate, какую колонку использовать как внешний ключ и нужно ли она быть обязательной (nullable = false)
+inverseJoinColumns = @JoinColumn(name = "role_id") — это аналогичный параметр, но для другой стороны связи.
+Это указывает Hibernate, что в связующей таблице будет еще одна колонка — role_id, которая будет ссылающимся на таблицу Role.
+
+Основной принцип работы Hibernate:
+По умолчанию внешний ключ ссылается на первичный ключ: Если не указано иначе, Hibernate всегда будет считать, что внешний ключ в связующей таблице
+сылается на первичный ключ целевой таблицы. В данном случае это таблица User, а первичный ключ в User — это поле id.
+
+Почему ссылается на id?:
+
+Поле id в классе User обычно помечено аннотацией @Id, что означает, что это поле является первичным ключом.
+Когда Hibernate видит, что в таблице user_roles есть поле user_id (которое указывает на колонку в таблице User),
+он по умолчанию связывает это поле с первичным ключом (с полем id в User).
+
+
+Если по каким-то причинам вы хотите явным образом указать, что внешний ключ должен ссылаться на поле id, вы можете сделать это, указав параметр referencedColumnName. Например:
+
+@JoinColumn(name = "user_id", referencedColumnName = "id")
+
+-------------------------------
+В OneToMany можно использовать параметр mappedBy, чтобы избежать создания избыточного внешнего ключа в родительской таблице.
+Если этого параметра нет, Hibernate создаст внешний ключ в родительской сущности.
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToMany(mappedBy = "user") // указываем, что у нас есть связь с полем user в сущности Task
+    private Set<Task> tasks;
+}
+
+@Entity
+public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false) // создаем внешний ключ, который будет ссылаться на таблицу User
+    private User user;
+}
+
+
+----------------------------------
+
+FetchType определяет, когда Hibernate загружает связанные сущности:
+
+@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+
+------------------------------------
+
+
+OneToMany коллекции не инициализируются Hibernate автоматически.
+Если не создать коллекцию сразу, могут возникнуть NullPointerException при добавлении новых элементов.
+поэтому в классе user     private Set<Task> tasks = new HashSet<>();
+------------------------------------------------------------------
+
+orphanRemoval = true говорит Hibernate:
+
+Если элемент удалён из коллекции, удали его и из базы данных.
+Пример:
+
+user.getTasks().remove(task); // Удаляем из коллекции
+userRepository.save(user);    // Сохраняем
+
+// ❌ Task всё равно останется в БД!
+
