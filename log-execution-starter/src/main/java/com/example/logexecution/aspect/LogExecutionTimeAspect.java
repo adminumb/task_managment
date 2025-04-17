@@ -1,6 +1,7 @@
-package com.example.task_service.task_service.aspect;
+package com.example.logexecution.aspect;
 
-import com.example.task_service.task_service.annotation.LogExecutionTime;
+import com.example.logexecution.annotation.LogExecutionTime;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +16,7 @@ public class LogExecutionTimeAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LogExecutionTimeAspect.class);
 
-    @Around("@annotation(com.example.task_service.task_service.annotation.LogExecutionTime)")
+    @Around("@annotation(main.java.com.example.logexecution.annotation.LogExecutionTime)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         
@@ -38,4 +39,4 @@ public class LogExecutionTimeAspect {
 
         return result;
     }
-} 
+}

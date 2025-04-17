@@ -12,6 +12,8 @@
 	<artifactId>task-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>task-service</name>
+	<packaging>pom</packaging>
+
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -87,6 +89,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -141,5 +144,7 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<modules>
+		<module>log-execution-starter</module>
+	</modules>
 </project>
