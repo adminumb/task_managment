@@ -1,9 +1,7 @@
 package com.example.task_service.task_service.mapper;
 
-import com.example.task_service.task_service.dto.TaskDTO;
 import com.example.task_service.task_service.dto.UserDTO;
 import com.example.task_service.task_service.entity.Role;
-import com.example.task_service.task_service.entity.Task;
 import com.example.task_service.task_service.entity.User;
 import com.example.task_service.task_service.repository.RoleRepository;
 import org.mapstruct.Context;
@@ -22,7 +20,7 @@ public interface UserMapper {
     UserDTO toDTO(User user);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "roles", expression = "java(mapStringToRole(dto.getRoles(), roleRepository))") // Используем правильный метод для маппинга ролей
+    @Mapping(target = "roles", expression = "java(mapStringToRole(dto.getRoles(), roleRepository))")
     User toEntity(UserDTO dto, @Context RoleRepository roleRepository);
 
     // Set<Role> → Set<String>

@@ -1,0 +1,32 @@
+2025-04-20 22:11:20 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-04-20 22:11:20 [main] INFO  c.e.t.t.c.TaskControllerTest - Starting TaskControllerTest using Java 21.0.2 with PID 25980 (started by Pavel in C:\Users\Pavel\Desktop\Cource\task-service\task_managment)
+2025-04-20 22:11:20 [main] INFO  c.e.t.t.c.TaskControllerTest - No active profile set, falling back to 1 default profile: "default"
+2025-04-20 22:11:23 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2025-04-20 22:11:23 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2025-04-20 22:11:23 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
+2025-04-20 22:11:23 [main] INFO  c.e.t.t.c.TaskControllerTest - Started TaskControllerTest in 3.418 seconds (process running for 5.012)
+2025-04-20 22:11:23 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.task_service.task_service.controller.UserControllerTest]: UserControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-04-20 22:11:23 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.task_service.task_service.TaskServiceApplication for test class com.example.task_service.task_service.controller.UserControllerTest
+2025-04-20 22:11:23 [main] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2025-04-20 22:11:23 [main] INFO  c.e.t.t.c.UserControllerTest - Starting UserControllerTest using Java 21.0.2 with PID 25980 (started by Pavel in C:\Users\Pavel\Desktop\Cource\task-service\task_managment)
+2025-04-20 22:11:23 [main] INFO  c.e.t.t.c.UserControllerTest - No active profile set, falling back to 1 default profile: "default"
+2025-04-20 22:11:23 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2025-04-20 22:11:23 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2025-04-20 22:11:23 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2025-04-20 22:11:23 [main] INFO  c.e.t.t.c.UserControllerTest - Started UserControllerTest in 0.295 seconds (process running for 5.804)
+2025-04-20 22:16:45 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-04-20 22:16:45 [main] INFO  c.e.t.t.c.TaskControllerTest - Starting TaskControllerTest using Java 21.0.2 with PID 20928 (started by Pavel in C:\Users\Pavel\Desktop\Cource\task-service\task_managment)
+2025-04-20 22:16:45 [main] INFO  c.e.t.t.c.TaskControllerTest - No active profile set, falling back to 1 default profile: "default"
+2025-04-20 22:16:48 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2025-04-20 22:16:48 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2025-04-20 22:16:48 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2025-04-20 22:16:48 [main] INFO  c.e.t.t.c.TaskControllerTest - Started TaskControllerTest in 3.405 seconds (process running for 4.97)
+2025-04-20 22:16:49 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.task_service.task_service.controller.UserControllerTest]: UserControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-04-20 22:16:49 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.task_service.task_service.TaskServiceApplication for test class com.example.task_service.task_service.controller.UserControllerTest
+2025-04-20 22:16:49 [main] INFO  o.s.b.d.r.RestartApplicationListener - Restart disabled due to context in which it is running
+2025-04-20 22:16:49 [main] INFO  c.e.t.t.c.UserControllerTest - Starting UserControllerTest using Java 21.0.2 with PID 20928 (started by Pavel in C:\Users\Pavel\Desktop\Cource\task-service\task_managment)
+2025-04-20 22:16:49 [main] INFO  c.e.t.t.c.UserControllerTest - No active profile set, falling back to 1 default profile: "default"
+2025-04-20 22:16:49 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2025-04-20 22:16:49 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2025-04-20 22:16:49 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2025-04-20 22:16:49 [main] INFO  c.e.t.t.c.UserControllerTest - Started UserControllerTest in 0.305 seconds (process running for 5.796)

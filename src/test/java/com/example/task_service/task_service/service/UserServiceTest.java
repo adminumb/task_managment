@@ -100,7 +100,7 @@ class UserServiceTest {
 
         // Test
         assertThrows(RoleNotFoundException.class, () -> userService.createUser(invalidUserDTO));
-        
+
         // Verify
         verify(userMapper).toEntity(invalidUserDTO, roleRepository);
         verify(userRepository, never()).save(any());
@@ -178,7 +178,7 @@ class UserServiceTest {
     void assignRolesToUser_whenUserNotFound_shouldThrowException() {
         when(userRepository.findByUsername("UnknownUser")).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, 
+        assertThrows(UserNotFoundException.class,
             () -> userService.assignRolesToUser("UnknownUser", Set.of("ROLE_ADMIN")));
         verify(userRepository).findByUsername("UnknownUser");
         verify(roleRepository, never()).findByName(any());
@@ -190,7 +190,7 @@ class UserServiceTest {
         when(userRepository.findByUsername("Pavel22")).thenReturn(Optional.of(userEntity));
         when(roleRepository.findByName("ROLE_UNKNOWN")).thenReturn(Optional.empty());
 
-        assertThrows(RoleNotFoundException.class, 
+        assertThrows(RoleNotFoundException.class,
             () -> userService.assignRolesToUser("Pavel22", Set.of("ROLE_UNKNOWN")));
         verify(userRepository).findByUsername("Pavel22");
         verify(roleRepository).findByName("ROLE_UNKNOWN");
