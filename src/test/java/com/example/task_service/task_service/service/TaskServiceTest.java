@@ -1,4 +1,3 @@
-/*
 package com.example.task_service.task_service.service;
 
 import com.example.task_service.task_service.dto.TaskDTO;
@@ -7,6 +6,7 @@ import com.example.task_service.task_service.entity.User;
 import com.example.task_service.task_service.mapper.TaskMapper;
 import com.example.task_service.task_service.repository.TaskRepository;
 import com.example.task_service.task_service.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,33 +47,41 @@ class TaskServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User();
-        user.setId(1L);
-        user.setUsername("testUser");
+        user = User.builder()
+                .id(1L)
+                .username("testUser")
+                .email("test@example.com")
+                .password("testPassword")
+                .active(true)
+                .build();
 
-        task = new Task();
-        task.setId(1L);
-        task.setTitle("Test Task");
-        task.setDescription("Test Description");
-        task.setCompleted(false);
-        task.setUser(user);
+        task = Task.builder()
+                .id(1L)
+                .title("Test Task")
+                .description("Test Description")
+                .completed(false)
+                .active(true)
+                .user(user)
+                .build();
 
-        taskDTO = new TaskDTO();
-        taskDTO.setId(1L);
-        taskDTO.setTitle("Test Task");
-        taskDTO.setDescription("Test Description");
-        taskDTO.setCompleted(false);
-        taskDTO.setUserUsername("testUser");
+        taskDTO = TaskDTO.builder()
+                .id(1L)
+                .title("Test Task")
+                .description("Test Description")
+                .completed(false)
+                .userUsername("testUser")
+                .build();
     }
 
     @Test
     void getAllTasks_ShouldReturnAllTasks() {
         // Arrange
         List<Task> tasks = Arrays.asList(task);
-        Page<Task> taskPage = new PageImpl<>(tasks);
         Pageable pageable = PageRequest.of(0, 10);
+        // Create PageImpl with total elements = 10 to match the page size
+        Page<Task> taskPage = new PageImpl<>(tasks, pageable, 10);
 
-        when(taskRepository.findAll(pageable)).thenReturn(taskPage);
+        when(taskRepository.findAllByActiveTrue(pageable)).thenReturn(taskPage);
         when(taskMapper.toDTO(any(Task.class))).thenReturn(taskDTO);
 
         // Act
@@ -81,19 +89,19 @@ class TaskServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
+        assertEquals(10, result.getTotalElements());
         assertEquals(1, result.getTotalPages());
         assertEquals(0, result.getNumber());
         assertEquals(10, result.getSize());
         assertEquals(taskDTO, result.getContent().get(0));
-        verify(taskRepository).findAll(pageable);
+        verify(taskRepository).findAllByActiveTrue(pageable);
         verify(taskMapper).toDTO(task);
     }
 
     @Test
     void getTaskById_WhenTaskExists_ShouldReturnTask() {
         // Arrange
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        when(taskRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(task));
         when(taskMapper.toDTO(any(Task.class))).thenReturn(taskDTO);
 
         // Act
@@ -102,21 +110,18 @@ class TaskServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(taskDTO, result);
-        verify(taskRepository).findById(1L);
+        verify(taskRepository).findByIdAndActiveTrue(1L);
         verify(taskMapper).toDTO(task);
     }
 
     @Test
-    void getTaskById_WhenTaskDoesNotExist_ShouldReturnNull() {
+    void getTaskById_WhenTaskDoesNotExist_ShouldThrowException() {
         // Arrange
-        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+        when(taskRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.empty());
 
-        // Act
-        TaskDTO result = taskService.getTaskById(1L);
-
-        // Assert
-        assertNull(result);
-        verify(taskRepository).findById(1L);
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> taskService.getTaskById(1L));
+        verify(taskRepository).findByIdAndActiveTrue(1L);
         verify(taskMapper, never()).toDTO(any());
     }
 
@@ -162,7 +167,6 @@ class TaskServiceTest {
     void updateTask_WhenTaskExists_ShouldUpdateAndReturnTask() {
         // Arrange
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(taskRepository.save(any(Task.class))).thenReturn(task);
         when(taskMapper.toDTO(any(Task.class))).thenReturn(taskDTO);
 
@@ -173,34 +177,46 @@ class TaskServiceTest {
         assertNotNull(result);
         assertEquals(taskDTO, result);
         verify(taskRepository).findById(1L);
-        verify(userRepository).findByUsername("testUser");
         verify(taskMapper).updateTaskFromTaskDTO(taskDTO, task);
         verify(taskRepository).save(task);
         verify(taskMapper).toDTO(task);
     }
 
     @Test
-    void updateTask_WhenTaskDoesNotExist_ShouldReturnNull() {
+    void updateTask_WhenTaskDoesNotExist_ShouldThrowException() {
         // Arrange
         when(taskRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act
-        TaskDTO result = taskService.updateTask(1L, taskDTO);
-
-        // Assert
-        assertNull(result);
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> taskService.updateTask(1L, taskDTO));
         verify(taskRepository).findById(1L);
         verify(taskMapper, never()).updateTaskFromTaskDTO(any(), any());
         verify(taskRepository, never()).save(any());
     }
 
     @Test
-    void deleteTask_ShouldDeleteTask() {
+    void deleteTask_ShouldSetActiveToFalse() {
+        // Arrange
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
+
         // Act
         taskService.deleteTask(1L);
 
         // Assert
-        verify(taskRepository).deleteById(1L);
+        verify(taskRepository).findById(1L);
+        verify(taskRepository).save(task);
+        assertFalse(task.isActive());
+    }
+
+    @Test
+    void deleteTask_WhenTaskDoesNotExist_ShouldThrowException() {
+        // Arrange
+        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> taskService.deleteTask(1L));
+        verify(taskRepository).findById(1L);
+        verify(taskRepository, never()).save(any());
     }
 }
-*/
