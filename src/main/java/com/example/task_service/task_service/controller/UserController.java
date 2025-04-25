@@ -39,7 +39,7 @@ public class UserController {
         UserDTO createdUser = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
-    @DeleteMapping("user/{id}")
+    @DeleteMapping("/user/{id}")
     public void deleteTask(@PathVariable Long id) {
         userService.deleteUser(id);
     }

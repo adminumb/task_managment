@@ -10,9 +10,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
       - task_management_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4
@@ -20,20 +25,24 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_SERVER_JSON: '{"Servers":{"2":{"Name":"PostgreSQL","Group":"Servers","Host":"postgres","Port":5432,"Username":"postgres","Password":"33386","SSLMode":"prefer"}}}'
     ports:
       - "5050:80"
     networks:
       - task_management_network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   task-service:
     build: .
     container_name: task-service
+    image: task-service:0.0.3
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       SERVER_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/task-service
@@ -42,7 +51,8 @@ services:
     networks:
       - task_management_network
 
-
+volumes:
+  postgres-data:
 networks:
   task_management_network:
     driver: bridge

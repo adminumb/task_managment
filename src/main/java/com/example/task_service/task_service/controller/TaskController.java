@@ -20,7 +20,7 @@ public class TaskController {
         return taskService.getAllTasks(pageable).getContent();
     }
 
-    @GetMapping("tasks/{id}")
+    @GetMapping("/tasks/{id}")
     public TaskDTO getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
@@ -40,7 +40,7 @@ public class TaskController {
         return taskService.updateTask(id, taskDTO);
     }
 
-    @DeleteMapping("task/{id}")
+    @DeleteMapping("/task/{id}")
     public void deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
     }

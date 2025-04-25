@@ -2,10 +2,9 @@ spring:
   application:
     name: task-service
   datasource:
-    url: ${DATABASE_URL}
-
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,11 +13,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        generate_statistics: true
+        use_sql_comments: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: classpath:db.changelog/main-changelog.xml
     enabled: true
     default-schema: public
+    user: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+    driver-class-name: org.postgresql.Driver
 
 server:
   port: ${SERVER_PORT}
@@ -41,3 +46,7 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+logging:
+  level:
+    root: DEBUG
