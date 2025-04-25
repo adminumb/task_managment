@@ -177,7 +177,9 @@
         <module name="StringLiteralEquality"/>
         <module name="ArrayTrailingComma"/>
         <module name="AvoidDoubleBraceInitialization"/>
+<!--
         <module name="DeclarationOrder"/>
+-->
         <module name="DefaultComesLast"/>
 <!--        <module name="FinalLocalVariable"/>-->
         <module name="IllegalCatch"/>

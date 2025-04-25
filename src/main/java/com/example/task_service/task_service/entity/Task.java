@@ -1,10 +1,7 @@
     package com.example.task_service.task_service.entity;
 
     import jakarta.persistence.*;
-    import lombok.AllArgsConstructor;
-    import lombok.Getter;
-    import lombok.NoArgsConstructor;
-    import lombok.Setter;
+    import lombok.*;
     import org.hibernate.annotations.CreationTimestamp;
     import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,16 +13,20 @@
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public class Task {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        private String name;
+        private String title;
 
         @Column(nullable = true, columnDefinition = "text")
         private String description;
         private boolean completed;
+
+        @Column
+        private boolean active = true;
 
         @Column(nullable = false)
         @CreationTimestamp
@@ -38,12 +39,5 @@
         @ManyToOne
         @JoinColumn(name = "user_id") // внешний ключ на пользователя
         private User user;
-
-
-        public Task(String name, String description, boolean completed) {
-            this.name = name;
-            this.description = description;
-            this.completed = completed;
-        }
 
     }

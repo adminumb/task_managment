@@ -28,7 +28,7 @@ class TaskMapperTest {
 
         task = new Task();
         task.setId(1L);
-        task.setName("Test Task");
+        task.setTitle("Test Task");
         task.setDescription("Test Description");
         task.setCreatedAt(LocalDateTime.now());
         task.setUpdatedAt(LocalDateTime.now());
@@ -36,12 +36,13 @@ class TaskMapperTest {
 
         taskDTO = new TaskDTO();
         taskDTO.setId(1L);
-        taskDTO.setName("Test Task");
+        taskDTO.setTitle("Test Task");
         taskDTO.setDescription("Test Description");
         taskDTO.setUserUsername("testUser");
     }
 
-/*    @Test
+/*
+    @Test
     void toDTO_ShouldMapTaskToTaskDTO() {
         // Act
         TaskDTO result = taskMapper.toDTO(task);
@@ -52,7 +53,8 @@ class TaskMapperTest {
         assertEquals(task.getName(), result.getName());
         assertEquals(task.getDescription(), result.getDescription());
         assertEquals(task.getUser().getUsername(), result.getUserUsername());
-    }*/
+    }
+*/
 
     @Test
     void toEntity_ShouldMapTaskDTOToTask() {
@@ -61,7 +63,7 @@ class TaskMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(taskDTO.getName(), result.getName());
+        assertEquals(taskDTO.getTitle(), result.getTitle());
         assertEquals(taskDTO.getDescription(), result.getDescription());
         // Note: user mapping is not handled in toEntity as it's not in the mapping
     }
@@ -71,7 +73,7 @@ class TaskMapperTest {
         // Arrange
         Task existingTask = new Task();
         existingTask.setId(1L);
-        existingTask.setName("Old Name");
+        existingTask.setTitle("Old Name");
         existingTask.setDescription("Old Description");
         existingTask.setCreatedAt(LocalDateTime.now().minusDays(1));
         existingTask.setUpdatedAt(LocalDateTime.now().minusDays(1));
@@ -81,7 +83,7 @@ class TaskMapperTest {
 
         // Assert
         assertEquals(1L, existingTask.getId()); // ID should not be updated
-        assertEquals(taskDTO.getName(), existingTask.getName());
+        assertEquals(taskDTO.getTitle(), existingTask.getTitle());
         assertEquals(taskDTO.getDescription(), existingTask.getDescription());
         assertNotNull(existingTask.getCreatedAt()); // createdAt should not be updated
         assertNotNull(existingTask.getUpdatedAt()); // updatedAt should not be updated
@@ -103,7 +105,7 @@ class TaskMapperTest {
     @Test
     void toEntity_WithNullFields_ShouldMapCorrectly() {
         // Arrange
-        taskDTO.setName(null);
+        taskDTO.setTitle(null);
         taskDTO.setDescription(null);
         taskDTO.setUserUsername(null);
 
@@ -112,7 +114,7 @@ class TaskMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertNull(result.getName());
+        assertNull(result.getTitle());
         assertNull(result.getDescription());
     }
 }

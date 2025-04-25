@@ -3,6 +3,7 @@ package com.example.task_service.task_service.mapper;
 import com.example.task_service.task_service.dto.UserDTO;
 import com.example.task_service.task_service.entity.Role;
 import com.example.task_service.task_service.entity.User;
+import com.example.task_service.task_service.exception.BadRequestException;
 import com.example.task_service.task_service.repository.RoleRepository;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -34,7 +35,7 @@ public interface UserMapper {
     default Set<Role> mapStringToRole(Set<String> roleNames, RoleRepository roleRepository) {
         return roleNames.stream()
                 .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                        .orElseThrow(() -> new BadRequestException("Role not found: " + roleName)))
                 .collect(Collectors.toSet());
     }
 }

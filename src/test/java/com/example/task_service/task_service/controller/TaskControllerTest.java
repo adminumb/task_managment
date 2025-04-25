@@ -1,148 +1,197 @@
 package com.example.task_service.task_service.controller;
 
 import com.example.task_service.task_service.dto.TaskDTO;
-import com.example.task_service.task_service.service.TaskService;
+import com.example.task_service.task_service.entity.Task;
+import com.example.task_service.task_service.entity.User;
+import com.example.task_service.task_service.mapper.TaskMapper;
+import com.example.task_service.task_service.repository.TaskRepository;
+import com.example.task_service.task_service.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(TaskController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@Testcontainers
+@ActiveProfiles("test")
 class TaskControllerTest {
+
+    @Container
+    private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:15-alpine");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private TaskService taskService;
-
     @Autowired
     private ObjectMapper objectMapper;
 
-    private TaskDTO taskDTO;
-    private List<TaskDTO> taskDTOList;
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private User testUser;
+    private Task testTask;
+    private TaskDTO testTaskDTO;
+    @Autowired
+    private  TaskMapper taskMapper;
 
     @BeforeEach
     void setUp() {
-        taskDTO = new TaskDTO();
-        taskDTO.setId(1L);
-        taskDTO.setName("Test Task");
-        taskDTO.setDescription("Test Description");
-        taskDTO.setCompleted(false);
-        taskDTO.setUserUsername("testuser");
-        taskDTO.setCreatedAt(LocalDateTime.now());
-        taskDTO.setUpdatedAt(LocalDateTime.now());
+        // Clear repositories
+        taskRepository.deleteAll();
+        userRepository.deleteAll();
 
-        taskDTOList = Arrays.asList(taskDTO);
+
+        testUser = User.builder()
+                .username("testUser")
+                .email("test@example.com")
+                .password("testPassword")
+                .active(true)
+                .build();
+        userRepository.save(testUser);
+
+
+        // Create test task
+        testTask = Task.builder()
+                .title("Test Task")
+                .description("Test Description")
+                .completed(false)
+                .active(true)
+                .user(testUser)
+                .build();
+        taskRepository.save(testTask);
+
+        testTaskDTO = taskMapper.toDTO(testTask);
+
     }
 
     @Test
-    void getAllTasks_shouldReturnTasks() throws Exception {
-        when(taskService.getAllTasks()).thenReturn(taskDTOList);
+    void getAllTasks_ShouldReturnAllTasks() throws Exception {
 
         mockMvc.perform(get("/api/v1/tasks"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].name").value("Test Task"))
-                .andExpect(jsonPath("$[0].description").value("Test Description"))
-                .andExpect(jsonPath("$[0].completed").value(false))
-                .andExpect(jsonPath("$[0].userUsername").value("testuser"))
-                .andExpect(jsonPath("$[0].createdAt").exists())
-                .andExpect(jsonPath("$[0].updatedAt").exists());
-
-        verify(taskService, times(1)).getAllTasks();
+                .andDo(print())
+                .andExpect(jsonPath("$[0].title").value(testTaskDTO.getTitle()))
+                .andExpect(jsonPath("$[0].description").value(testTaskDTO.getDescription()))
+                .andExpect(jsonPath("$[0].completed").value(testTaskDTO.isCompleted()))
+                .andExpect(jsonPath("$[0].userUsername").value(testUser.getUsername()));
     }
 
     @Test
-    void getTaskById_shouldReturnTask() throws Exception {
-        when(taskService.getTaskById(1L)).thenReturn(taskDTO);
-
-        mockMvc.perform(get("/api/v1/tasks/1"))
+    void getTaskById_WhenTaskExists_ShouldReturnTask() throws Exception {
+        mockMvc.perform(get("/api/v1/tasks/{id}", testTaskDTO.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Test Task"))
-                .andExpect(jsonPath("$.description").value("Test Description"))
-                .andExpect(jsonPath("$.completed").value(false))
-                .andExpect(jsonPath("$.userUsername").value("testuser"))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.updatedAt").exists());
-
-        verify(taskService, times(1)).getTaskById(1L);
+                .andExpect(jsonPath("$.title").value(testTaskDTO.getTitle()))
+                .andExpect(jsonPath("$.description").value(testTaskDTO.getDescription()))
+                .andExpect(jsonPath("$.completed").value(testTaskDTO.isCompleted()))
+                .andExpect(jsonPath("$.userUsername").value(testUser.getUsername()));
     }
 
     @Test
-    void createTask_shouldReturnCreatedTask() throws Exception {
-        when(taskService.createTask(any(TaskDTO.class))).thenReturn(taskDTO);
+    void getTaskById_WhenTaskDoesNotExist_ShouldReturnNotFound() throws Exception {
+        mockMvc.perform(get("/api/v1/tasks/{id}", 999L))
+                .andExpect(status().isNotFound());
+    }
 
+    @Test
+    void createTask_ShouldCreateAndReturnTask() throws Exception {
         mockMvc.perform(post("/api/v1/task")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(taskDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testTaskDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Test Task"))
-                .andExpect(jsonPath("$.description").value("Test Description"))
-                .andExpect(jsonPath("$.completed").value(false))
-                .andExpect(jsonPath("$.userUsername").value("testuser"))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.updatedAt").exists());
-
-        verify(taskService, times(1)).createTask(any(TaskDTO.class));
+                .andExpect(jsonPath("$.title").value(testTaskDTO.getTitle()))
+                .andExpect(jsonPath("$.description").value(testTaskDTO.getDescription()))
+                .andExpect(jsonPath("$.completed").value(testTaskDTO.isCompleted()))
+                .andExpect(jsonPath("$.userUsername").value(testUser.getUsername()));
     }
 
     @Test
-    void getTasksByUser_shouldReturnUserTasks() throws Exception {
-        when(taskService.getTasksByUsername("testuser")).thenReturn(taskDTOList);
-
-        mockMvc.perform(get("/api/v1/user/testuser"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].name").value("Test Task"))
-                .andExpect(jsonPath("$[0].userUsername").value("testuser"));
-
-        verify(taskService, times(1)).getTasksByUsername("testuser");
+    void createTask_WithNonExistentUser_ShouldReturnBadRequest() throws Exception {
+        testTaskDTO.setUserUsername("nonExistentUser");
+        mockMvc.perform(post("/api/v1/task")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testTaskDTO)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void updateTask_shouldReturnUpdatedTask() throws Exception {
-        when(taskService.updateTask(eq(1L), any(TaskDTO.class))).thenReturn(taskDTO);
-
-        mockMvc.perform(put("/api/v1/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(taskDTO)))
+    void getTasksByUser_ShouldReturnUserTasks() throws Exception {
+        mockMvc.perform(get("/api/v1/user/{username}", testUser.getUsername()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Test Task"))
-                .andExpect(jsonPath("$.description").value("Test Description"))
-                .andExpect(jsonPath("$.completed").value(false))
-                .andExpect(jsonPath("$.userUsername").value("testuser"))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.updatedAt").exists());
-
-        verify(taskService, times(1)).updateTask(eq(1L), any(TaskDTO.class));
+                .andExpect(jsonPath("$[0].title").value(testTaskDTO.getTitle()))
+                .andExpect(jsonPath("$[0].description").value(testTaskDTO.getDescription()))
+                .andExpect(jsonPath("$[0].completed").value(testTaskDTO.isCompleted()))
+                .andExpect(jsonPath("$[0].userUsername").value(testUser.getUsername()));
     }
 
     @Test
-    void deleteTask_shouldReturnOk() throws Exception {
-        doNothing().when(taskService).deleteTask(1L);
+    void getTasksByUser_WithNonExistentUser_ShouldReturnEmptyList() throws Exception {
+        mockMvc.perform(get("/api/v1/user/{username}", "nonExistentUser"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 
-        mockMvc.perform(delete("/api/v1/1"))
+    @Test
+    void updateTask_WhenTaskExists_ShouldUpdateAndReturnTask() throws Exception {
+        testTaskDTO.setTitle("Updated Title");
+        testTaskDTO.setDescription("Updated Description");
+
+        mockMvc.perform(put("/api/v1/{id}", testTask.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testTaskDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(testTaskDTO.getTitle()))
+                .andExpect(jsonPath("$.description").value(testTaskDTO.getDescription()))
+                .andExpect(jsonPath("$.completed").value(testTaskDTO.isCompleted()))
+                .andExpect(jsonPath("$.userUsername").value(testUser.getUsername()));
+    }
+
+    @Test
+    void updateTask_WhenTaskDoesNotExist_ShouldReturnNotFound() throws Exception {
+        mockMvc.perform(put("/api/v1/{id}", 999L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testTaskDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteTask_ShouldDeleteTask() throws Exception {
+        mockMvc.perform(delete("/api/v1/task/{id}", testTask.getId()))
                 .andExpect(status().isOk());
 
-        verify(taskService, times(1)).deleteTask(1L);
+        mockMvc.perform(get("/api/v1/tasks/{id}", testTask.getId()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteTask_WhenTaskDoesNotExist_ShouldReturnNotFound() throws Exception {
+        mockMvc.perform(delete("/api/v1/task/{id}", 999L))
+                .andExpect(status().isNotFound());
     }
 }
 

@@ -27,8 +27,21 @@ services:
     depends_on:
       - postgres
 
-volumes:
-  postgres-data:
+  task-service:
+    build: .
+    container_name: task-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/task-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 33386
+    networks:
+      - task_management_network
+
 
 networks:
   task_management_network:
