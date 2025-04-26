@@ -2,7 +2,9 @@ package com.example.task_service.task_service.controller;
 
 import com.example.task_service.task_service.dto.UserDTO;
 import com.example.task_service.task_service.service.UserService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +14,13 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
-    public List<UserDTO> getUsers() {
-        return userService.getAllUsers();
+    public List<UserDTO> getUsers(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        return userService.getAllUsers(pageable).getContent();
     }
 
     @GetMapping("/users/{username}")
@@ -37,5 +39,8 @@ public class UserController {
         UserDTO createdUser = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
+    @DeleteMapping("/user/{id}")
+    public void deleteTask(@PathVariable Long id) {
+        userService.deleteUser(id);
+    }
 }
-

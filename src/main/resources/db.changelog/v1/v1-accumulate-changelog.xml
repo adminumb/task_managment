@@ -7,12 +7,12 @@
 
     <!-- First create user and role tables -->
     <changeSet id="v1-1" author="pavel">
-        <sqlFile path="db.changelog/v1/v1-create-table-user-role.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v1-create-table-user-role.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <!-- Then create task table that depends on users table -->
     <changeSet id="v1-2" author="pavel">
-        <sqlFile path="db.changelog/v1/v1-create-table-task.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v1-create-table-task.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
 </databaseChangeLog>

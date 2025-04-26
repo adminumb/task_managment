@@ -30,16 +30,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-//    @ManyToMany
-//    @JoinTable(name = "user_team",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "team_id"))
-//    private List<Team> teams;
-//
-//    @OneToMany(mappedBy = "owner")
-//    private List<Project> projects;
-
-
+    @Column(nullable = false)
+    private boolean active = true;
 
     @ManyToMany
     @JoinTable(

@@ -5,9 +5,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TaskDTO {
     private Long id;
-    private String name;
+    private String title;
     private String description;
     private boolean completed;
     private String userUsername;
