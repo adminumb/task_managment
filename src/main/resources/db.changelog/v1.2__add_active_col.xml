@@ -6,6 +6,11 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <changeSet id="add-active-column-to-task" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="task" columnName="active"/>
+            </not>
+        </preConditions>
         <addColumn tableName="task">
             <column name="active" type="BOOLEAN" defaultValueBoolean="true">
                 <constraints nullable="false"/>
@@ -14,10 +19,17 @@
     </changeSet>
 
     <changeSet id="add-active-column-to-users" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="active"/>
+            </not>
+        </preConditions>
         <addColumn tableName="users">
             <column name="active" type="BOOLEAN" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
+
+
 </databaseChangeLog>

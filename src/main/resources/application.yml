@@ -1,52 +1,11 @@
 spring:
   application:
     name: task-service
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        generate_statistics: true
-        use_sql_comments: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  cloud:
+    config:
+      uri: http://localhost:8888
+
   liquibase:
     change-log: classpath:db.changelog/main-changelog.xml
     enabled: true
-    default-schema: public
-    user: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    url: ${SPRING_DATASOURCE_URL}
-    driver-class-name: org.postgresql.Driver
-
-server:
-  port: ${SERVER_PORT}
-
-log:
-  execution:
-    enabled: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-
-logging:
-  level:
-    root: DEBUG

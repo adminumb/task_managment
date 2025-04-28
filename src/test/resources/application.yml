@@ -4,6 +4,13 @@ spring:
     username: postgres
     password: 33386
     driver-class-name: org.postgresql.Driver
+  cloud:
+    config:
+      enabled: false
+  config:
+    import: "optional:configserver:"
+  application:
+    name: task-service  # Название твоего приложения
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,6 +23,7 @@ spring:
     change-log: classpath:db.changelog/main-changelog.xml
     enabled: true
     default-schema: public
+    contexts: test
 
 server:
   port: 8095
@@ -23,3 +31,4 @@ server:
 logging:
   level:
     root: DEBUG
+
