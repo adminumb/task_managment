@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: task-service  # имя приложения (должно совпадать с названием файла task-service.yml в конфиг-репозитории)
+  cloud:
+    config:
+      uri: http://localhost:8888  # URL твоего Config Server
+      import-check:
+        enabled: false
+  config:
+    import: "optional:configserver:"

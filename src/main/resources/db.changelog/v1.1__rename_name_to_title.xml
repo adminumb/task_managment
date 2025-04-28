@@ -6,10 +6,16 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <changeSet id="rename_name_to_title" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="task" columnName="title"/>
+            </not>
+        </preConditions>
         <renameColumn tableName="task"
-                     oldColumnName="name"
-                     newColumnName="title"
-                     columnDataType="varchar(255)"/>
+                      oldColumnName="name"
+                      newColumnName="title"
+                      columnDataType="varchar(255)"/>
     </changeSet>
+
 
 </databaseChangeLog>
