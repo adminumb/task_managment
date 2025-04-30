@@ -2,6 +2,7 @@ package com.example.task_service.task_service.controller;
 
 import com.example.task_service.task_service.dto.TaskDTO;
 import com.example.task_service.task_service.service.TaskService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -16,6 +17,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping("/tasks")
+    @RateLimiter(name = "taskServiceRateLimiter")
     public List<TaskDTO> getAllTasks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
         return taskService.getAllTasks(pageable).getContent();
     }
