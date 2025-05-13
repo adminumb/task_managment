@@ -24,11 +24,17 @@
 Убедитесь, что в корне проекта находятся следующие папки:
 
 project-root/
+
 ├── task-managment/
+
 ├── gateway-service/
+
 ├── eureka-server/
+
 ├── config-server/
+
 ├── task-config-repo/ ← просто репозиторий с конфигами
+
 └── docker-compose.yml ← в task-managment или скопировать в корень
 
 ### 2 . Сгенерить jar в каждом из сервисов
