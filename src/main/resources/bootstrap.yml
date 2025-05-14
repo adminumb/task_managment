@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: task-service
+
+  config:
+    import: "optional:configserver:"
+
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:task-service}
+    non-secure-port-enabled: true
+    non-secure-port: ${EUREKA_INSTANCE_NON_SECURE_PORT:8080}
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
+
+
+resilience4j:
+  ratelimiter:
+    instances:
+      taskServiceRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 10s
+        timeoutDuration: 500ms
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 100

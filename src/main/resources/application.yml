@@ -5,29 +5,31 @@ spring:
   config:
     import: "optional:configserver:"
 
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        service-id: config-server
+server:
+  port: 8095
 
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-    hostname: ${EUREKA_INSTANCE_HOSTNAME:task-service}
-    non-secure-port-enabled: true
-    non-secure-port: ${EUREKA_INSTANCE_NON_SECURE_PORT:8080}
+log:
+  execution:
+    enabled: true
+
+logging:
+  level:
+    root: DEBUG
 
 management:
-  tracing:
-    enabled: true
-    sampling:
-      probability: 1.0
-  zipkin:
-    tracing:
-      endpoint: ${ZIPKIN_ENDPOINT:http://zipkin:9411/api/v2/spans}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+
+
