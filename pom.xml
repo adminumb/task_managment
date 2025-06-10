@@ -19,6 +19,7 @@
 		<config_loc>config</config_loc>
 		<testcontainers.version>1.19.3</testcontainers.version>
 		<spring-cloud.version>2024.0.1</spring-cloud.version>
+		<springdoc.version>2.1.0</springdoc.version>
 	</properties>
 
 	<dependencyManagement>
@@ -108,10 +109,11 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
+		<!--Swagger-->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.1.0</version>
+			<version>${springdoc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -121,6 +123,7 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-bootstrap</artifactId>
 		</dependency>
+		<!--Tracing-->
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-tracing-bridge-brave</artifactId>
@@ -133,7 +136,7 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-tracing</artifactId>
 		</dependency>
-		<!-- Resilience4j dependencies -->
+		<!-- Resilience4j dependencies(RateLimit) -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-spring-boot3</artifactId>
@@ -143,6 +146,11 @@
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-ratelimiter</artifactId>
 			<version>2.1.0</version>
+		</dependency>
+		<!--Kafka-->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
 
 		<!-- TestContainers dependencies -->

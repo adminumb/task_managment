@@ -8,6 +8,7 @@ import com.example.task_service.task_service.exception.BadRequestException;
 import com.example.task_service.task_service.mapper.TaskMapper;
 import com.example.task_service.task_service.repository.TaskRepository;
 import com.example.task_service.task_service.repository.UserRepository;
+import com.example.task_service.task_service.kafka.KafkaTaskProducer;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final UserRepository userRepository;
+    private final KafkaTaskProducer kafkaTaskProducer;
 
     @LogExecutionTime
     public Page<TaskDTO> getAllTasks(Pageable pageable) {
@@ -49,6 +51,8 @@ public class TaskService {
         Task task = taskMapper.toEntity(taskDTO);
         task.setUser(user);
         task = taskRepository.save(task);
+        // Отправить сообщение в Kafka
+        kafkaTaskProducer.sendTaskEvent(taskMapper.toDTO(task));
         return taskMapper.toDTO(task);
     }
 

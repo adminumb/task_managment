@@ -5,6 +5,22 @@ spring:
   config:
     import: "optional:configserver:"
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      enable-idempotence: true
+      retries: 3
+      delivery-timeout-ms: 120000
+      max-in-flight-requests-per-connection: 5
+      transaction-id-prefix: task-service-
+    properties:
+      spring.json.add.type.headers: false
+      spring.json.trusted.packages: com.example.task_service.task_service.dto
+      spring.json.use.type.headers: false
+
 server:
   port: 8095
 
@@ -15,6 +31,7 @@ log:
 logging:
   level:
     root: DEBUG
+    org.springframework.kafka: INFO
 
 management:
   endpoints:
@@ -27,9 +44,16 @@ management:
 
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /api-docs
+    groups:
+      enabled: true
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+  show-actuator: true
 
-
-
+app:
+  version: "@project.version@"
